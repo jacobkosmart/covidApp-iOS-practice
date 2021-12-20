@@ -105,7 +105,7 @@ class ViewController: UIViewController {
 		let dataSet = PieChartDataSet(entries: entries, label: "지역별 코로나 발생 현황")
 		// PieChart Design
 		dataSet.sliceSpace = 2 // 항목간의 간격 1pt
-		dataSet.entryLabelColor = .black // 항목 이름 색 black
+		dataSet.entryLabelColor = .systemGray // 항목 이름 색 black
 		dataSet.valueTextColor = .black //  항목 안에 있는 value 값을 black 으로
 		dataSet.xValuePosition = .outsideSlice // 항목 이름이 pie Chart 에 표시 하지 않고 밖에 표시하게 하기
 		dataSet.valueLinePart1OffsetPercentage = 0.8
