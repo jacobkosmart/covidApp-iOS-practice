@@ -1,6 +1,6 @@
 # 💉 CovidApp-iOS-practice
 
-<!-- todo gif -->
+<img width="350" alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/146730627-8f9385af-b0aa-45ad-aa82-1831285c9e49.gif">
 
 ## 📌 기능 상세
 
@@ -10,7 +10,7 @@
 
 ## 🔑 Check Point !
 
-<!-- todo  스크린샷 -->
+![image](https://user-images.githubusercontent.com/28912774/146729960-c6833f1e-652c-4a72-8d33-e6fa83b6ef44.png)
 
 ### 🔷 App Model
 
@@ -62,6 +62,8 @@ struct CovidTime: Codable {
 
 ### 🔷 굿바이 코로나 19 API
 
+> Corona-19-API - https://github.com/dhlife09/Corona-19-API
+
 ### 🔷 Alamofire
 
 #### completionHandler 의 escaping closure 선언 이유
@@ -108,7 +110,27 @@ struct CovidTime: Codable {
 
 ### 🔷 Cocoapods
 
-> Describing check point in details in Jacob's DevLog - https://jacobko.info/ios/ios-06/
+- Apple platform 에서 개발을 할 때, 외부 라이브를 관리하기 쉽도록 도와주는 의존성 관리도구 입니다
+
+- 프로젝트에서 필요한 외부 라이브러리를 쉽게 관리하고, 사용할 수 있습니다.
+
+> Cocoapods official site - https://cocoapods.org/
+
+### Cocoapods 설치
+
+```bash
+$ sudo gem install cocoapods
+```
+
+### Cocoapods 프로젝트에 적용
+
+- xcode 로 새로운 project 를 생성하면 그 경로에 terminal 로 가서 Podfile 생성
+
+```bash
+pod init
+```
+
+- Podfile 을 수정하게 되면 외부 라이브러리를 가져오거나, 수정 할 수 있습니다.
 
 ### 🔷 Loading indicator
 
@@ -145,6 +167,105 @@ struct CovidTime: Codable {
 
 - GitHub 나 외부로 public 하게 project 공유시, apiKey 나, passWord, authentication 관련 key 값들을 외부에 노출 시키지 않기 위해서 code 에 key 값을 바로 적는것이 아니라, plist (property list) 를 생성해줘서 따로 관리 해야 합니다
 
+#### 1. API_KEY 를 저장할 plist 생성
+
+- Key 값으로 `API_KEY` value 값으로 API key 값을 넣습니다
+
+![image](https://user-images.githubusercontent.com/28912774/146726891-93deb59b-e60c-4979-8f2c-eacdea8c49e8.png)
+
+#### 2. key 값을 불러올 Extension 파일 생성
+
+```swift
+// in CovidApp++Bundle.swift
+// "앱이름++Bundle.swift 형식으로
+
+import Foundation
+
+// Bundle 값으로 변수 key 를 return
+extension Bundle {
+	var apiKey: String {
+		guard let file = self.path(forResource: "CovidKey", ofType: "plist") else { return ""}
+
+		guard let resource = NSDictionary(contentsOfFile: file) else {return ""}
+		guard let key = resource["API_KEY"] as? String else { fatalError("Check API Key value")}
+		return key
+	}
+}
+
+```
+
+📌 Bundle 에 extension 해서 작성하는 이유?
+
+- Bundle 이란 실행가능한 코드와 그 코드의 자원을 포함하고 있는 디렉토리 입니다.
+
+- Bundle 안에 apiKey 값을 가져오기 위해 `Bundle.main.apiKey` 순으로 접근해서 사용합니다
+
+#### 3. API 호출 할때 plist 에 저장한 API_KEY 정보 불러와 대입하기
+
+```swift
+// in viewController.swift
+
+// fetch data SearchCovideOverview
+func fetchCovidOverview(
+	// API 를 통해서 sever에서 json dat 를 받거나, 요청에 실패 하였을때 completionHandler 를 호출해서 해당 closure 를 정의하는 곳에 응답받은 data를 전달 해야 합니다
+	// completionHandler 를 @escaping closure 가 되게 설정
+	completionHandler: @escaping (Result<CityCovidOverView, Error>) -> Void
+) {
+	let apiKey = Bundle.main.apiKey
+	let url = "https://api.corona-19.kr/korea/country/new/"
+	let param = [
+		"serviceKey": apiKey
+	]
+....
+```
+
+#### 4. .gitignore 에 추가 시키기
+
+```bash
+
+# Created by https://www.toptal.com/developers/gitignore/api/xcode,cocoapods
+# Edit at https://www.toptal.com/developers/gitignore?templates=xcode,cocoapods
+
+### CocoaPods ###
+## CocoaPods GitIgnore Template
+
+# CocoaPods - Only use to conserve bandwidth / Save time on Pushing
+#           - Also handy if you have a large number of dependant pods
+#           - AS PER https://guides.cocoapods.org/using/using-cocoapods.html NEVER IGNORE THE LOCK FILE
+Pods/
+
+
+### Xcode ###
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+##APIKEY
+CovidKey.plist
+
+## User settings
+xcuserdata
+
+.....
+```
+
+#### 5. Git 추적 중지 시키기
+
+- 추후 git clone project 실행시 local 환경에서 APIKEY 값이 변경되더라도 git 에서 자동 추적되지 않고 gitHub 등에 업로드 되지 않게 하기입니다
+
+```bash
+# git update-index --skip-worktree  프로젝트명/파일명.plist
+git update-index --skip-worktree  07_covid_app/covidKey.plist
+```
+
+- 다시 원상 복귀는 `--no-skip` 해주면 됩니다
+
+```bash
+git update-index --no-skip-worktree  07_covid_app/covidKey.plist
+```
+
+> Describing check point in details in Jacob's DevLog - https://jacobko.info/ios/ios-08/
+
 <!-- ## ❌ Error Check Point
 
 ### 🔶 -->
@@ -158,3 +279,7 @@ struct CovidTime: Codable {
 Jacob's DevLog - [https://jacobko.info/uikit/ios-08/](https://jacobko.info/uikit/ios-08/)
 
 나른한 코딩 - [https://nareunhagae.tistory.com/44](https://nareunhagae.tistory.com/44)
+
+codewithchrist - [https://codewithchris.com/alamofire/](https://codewithchris.com/alamofire/)
+
+fastcampus - [https://fastcampus.co.kr/dev_online_iosappfinal](https://fastcampus.co.kr/dev_online_iosappfinal)
