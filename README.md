@@ -66,6 +66,12 @@ struct CovidTime: Codable {
 
 ### 🔷 Alamofire
 
+- Alamofire 는 Swift 기반의 HTTP 네트워킹 라이브러리 입니다. URLSession 을 기반으로 한 라이브러리로서, 네트워킹 작업을 단순히 하고 네트워킹을 위한 다양한 method, json parsing 등을 제공 합니다.
+
+#### Alamofire 주요 특징
+
+- 연결 가능한 request, response method 를 제공하며, URL json parameter encoding 을 지원 합니다. 파일 데이터 스트리밍, multi part form date 등 upload 기능을 제공하며, HTTP response 검증과 광범위한 Unit Test, 통합 Test 등을 지원합니다
+
 #### completionHandler 의 escaping closure 선언 이유
 
 - func 에서 escape 선언은 함수의 scope 를 벗어 나서도 변수가 참조 될 수 있게 하는 클로져 임. 즉, 함수의 인자로 closure 가 전달되지만, 반환된 후에도 실행되는 것을 의미합니다.
